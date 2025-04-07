@@ -27,23 +27,6 @@ A Windows desktop application that simplifies creating Start Menu shortcuts with
 - Windows 7 or newer
 - Administrator rights (for "All Users" installation)
 
-## Creating an Executable (.exe)
-
-To create a standalone executable file:
-
-1. Install PyInstaller
-2. Run: pyinstaller --onefile --windowed --icon=assets/app_icon.ico main.py
-3. Find your executable in the dist folder
-
-## Creating an Installer
-
-To create a professional installer:
-
-1. Build the executable first using the steps above
-2. Install NSIS from https://nsis.sourceforge.io/
-3. Run the create_installer.py script
-4. Compile the generated .nsi script with NSIS
-
 ## Project Structure
 
 - main.py - Main application entry point with PyQt GUI
