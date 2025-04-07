@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Windows-style application icon for shortcut creator -->
+  
+  <!-- Background rounded square -->
+  <rect x="2" y="2" width="44" height="44" rx="8" fill="#0078D4"/>
+  
+  <!-- Start Menu icon stylized -->
+  <rect x="12" y="12" width="24" height="24" rx="4" fill="white" fill-opacity="0.9"/>
+  
+  <!-- Arrow (shortcut symbol) -->
+  <path d="M28 16L36 24L28 32" stroke="#0078D4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Start menu tiles representation -->
+  <rect x="14" y="16" width="6" height="6" rx="1" fill="#0078D4"/>
+  <rect x="14" y="24" width="6" height="6" rx="1" fill="#0078D4"/>
+  <rect x="22" y="16" width="6" height="6" rx="1" fill="#0078D4"/>
+  <rect x="22" y="24" width="6" height="6" rx="1" fill="#0078D4"/>
+</svg>
