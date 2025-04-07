@@ -1,10 +1,61 @@
-Windows Start Menu Shortcut Creator Helper
+# Start Menu Shortcut Creator
 
-Key Features
+A Windows desktop application that simplifies creating Start Menu shortcuts with a user-friendly interface.
 
-    Console-Based Demo: Developed a console-based demo simulating a Windows Start Menu Shortcut Creator.
-    Executable Information Extraction: Implemented simulation for extracting executable information.
-    Shortcut Creation Preview: Added a feature to preview shortcut creation with path visualization.
-    Windows File System Paths: Simulated Windows file system paths for a realistic experience.
-    Admin Permission Checks: Simulated admin permission checks for specific actions.
-    Comprehensive Demonstration: Showcased both the application info and the shortcut creation process.
+## Features
+
+- Drag and drop interface for selecting executable files
+- Automatic extraction of application information and icons
+- Dynamic icon preview with selectable sizes (16×16, 32×32, 48×48)
+- Support for custom shortcut names
+- Options for current user or all users installation
+- Organization of shortcuts into subfolders
+- Administrator privilege elevation when needed
+- Shortcut verification and repair tools
+
+## How to Use
+
+1. Start the application - Run the executable file after installation
+2. Select an executable - Drag and drop a .exe file or click to browse
+3. Configure shortcut - Modify the shortcut name if desired
+4. Choose installation location - Current user or All users (requires admin)
+5. Optional: Add subfolder - Organize shortcuts by specifying a subfolder
+6. Create shortcut - Click the "Create Shortcut" button
+
+## Requirements
+
+- Windows 7 or newer
+- Administrator rights (for "All Users" installation)
+
+## Creating an Executable (.exe)
+
+To create a standalone executable file:
+
+1. Install PyInstaller
+2. Run: pyinstaller --onefile --windowed --icon=assets/app_icon.ico main.py
+3. Find your executable in the dist folder
+
+## Creating an Installer
+
+To create a professional installer:
+
+1. Build the executable first using the steps above
+2. Install NSIS from https://nsis.sourceforge.io/
+3. Run the create_installer.py script
+4. Compile the generated .nsi script with NSIS
+
+## Project Structure
+
+- main.py - Main application entry point with PyQt GUI
+- shortcut_creator.py - Core Windows shortcut functionality
+- shortcut_creator_demo.py - Simulated shortcut creation for testing
+- console_demo.py - Console-based demo of the application
+- ui_components.py - UI components for the PyQt application
+- styles.py - Style definitions for the UI
+- icon_extractor.py - Extract application icons from executables
+- shortcut_verifier.py - Verify and repair broken shortcuts
+- icon_converter.py - Tool to convert SVG icons to ICO format
+- setup.py - Setup script for distribution
+- create_installer.py - Tool to create a Windows installer
+- build_windows_exe.bat - Batch file to build on Windows
+- assets/ - Application icons and images

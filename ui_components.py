@@ -8,9 +8,10 @@ from PyQt5.QtWidgets import (
     QApplication
 )
 from PyQt5.QtCore import Qt, QMimeData, QUrl, pyqtSignal, QSize
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QIcon, QPalette, QColor, QFont, QFontMetrics
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QIcon, QPalette, QColor, QFont, QFontMetrics, QPixmap
 from PyQt5.QtSvg import QSvgWidget
 from styles import StyleSheet
+from icon_extractor import IconExtractor
 
 # Check if running on Windows
 IS_WINDOWS = platform.system() == "Windows"
@@ -85,6 +86,7 @@ class PreviewWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setStyleSheet(StyleSheet.PREVIEW_WIDGET)
+        self.icon_extractor = IconExtractor()
         
         # Main layout
         layout = QVBoxLayout(self)
@@ -93,6 +95,16 @@ class PreviewWidget(QWidget):
         title_label = QLabel("Shortcut Preview")
         title_label.setStyleSheet(StyleSheet.SECTION_TITLE)
         layout.addWidget(title_label)
+        
+        # Icon and info layout
+        icon_info_layout = QHBoxLayout()
+        
+        # Icon preview
+        self.icon_preview = QLabel()
+        self.icon_preview.setAlignment(Qt.AlignCenter)
+        self.icon_preview.setMinimumSize(64, 64)
+        self.icon_preview.setMaximumSize(64, 64)
+        icon_info_layout.addWidget(self.icon_preview, alignment=Qt.AlignTop)
         
         # Preview content frame
         self.preview_frame = QFrame()
@@ -115,8 +127,92 @@ class PreviewWidget(QWidget):
         preview_layout.addRow("Product:", self.product_info)
         preview_layout.addRow("Publisher:", self.company_info)
         
-        layout.addWidget(self.preview_frame)
+        icon_info_layout.addWidget(self.preview_frame)
+        layout.addLayout(icon_info_layout)
+        
+        # Add icon size selection
+        icon_size_layout = QHBoxLayout()
+        icon_size_layout.setAlignment(Qt.AlignLeft)
+        
+        icon_size_label = QLabel("Icon Size:")
+        icon_size_layout.addWidget(icon_size_label)
+        
+        # Icon size options
+        self.size_16_btn = QPushButton("16×16")
+        self.size_16_btn.setFixedSize(50, 30)
+        self.size_16_btn.setStyleSheet(StyleSheet.ICON_SIZE_BUTTON)
+        self.size_16_btn.setCheckable(True)
+        self.size_16_btn.clicked.connect(lambda: self.change_icon_size(16))
+        
+        self.size_32_btn = QPushButton("32×32")
+        self.size_32_btn.setFixedSize(50, 30)
+        self.size_32_btn.setStyleSheet(StyleSheet.ICON_SIZE_BUTTON_SELECTED)
+        self.size_32_btn.setCheckable(True)
+        self.size_32_btn.setChecked(True)  # Default
+        self.size_32_btn.clicked.connect(lambda: self.change_icon_size(32))
+        
+        self.size_48_btn = QPushButton("48×48")
+        self.size_48_btn.setFixedSize(50, 30)
+        self.size_48_btn.setStyleSheet(StyleSheet.ICON_SIZE_BUTTON)
+        self.size_48_btn.setCheckable(True)
+        self.size_48_btn.clicked.connect(lambda: self.change_icon_size(48))
+        
+        icon_size_layout.addWidget(self.size_16_btn)
+        icon_size_layout.addWidget(self.size_32_btn)
+        icon_size_layout.addWidget(self.size_48_btn)
+        icon_size_layout.addStretch()
+        
+        layout.addLayout(icon_size_layout)
+        
         self.setLayout(layout)
+        self.current_exe_path = None
+        self.current_icon_size = 32
+        
+    def change_icon_size(self, size):
+        """Change the icon preview size."""
+        self.current_icon_size = size
+        
+        # Update button states and styles
+        self.size_16_btn.setChecked(size == 16)
+        self.size_16_btn.setStyleSheet(
+            StyleSheet.ICON_SIZE_BUTTON_SELECTED if size == 16 else StyleSheet.ICON_SIZE_BUTTON
+        )
+        
+        self.size_32_btn.setChecked(size == 32)
+        self.size_32_btn.setStyleSheet(
+            StyleSheet.ICON_SIZE_BUTTON_SELECTED if size == 32 else StyleSheet.ICON_SIZE_BUTTON
+        )
+        
+        self.size_48_btn.setChecked(size == 48)
+        self.size_48_btn.setStyleSheet(
+            StyleSheet.ICON_SIZE_BUTTON_SELECTED if size == 48 else StyleSheet.ICON_SIZE_BUTTON
+        )
+        
+        # Update icon if we have a path
+        if self.current_exe_path:
+            self.update_icon(self.current_exe_path)
+    
+    def update_icon(self, exe_path):
+        """Update the icon preview from the executable."""
+        if not exe_path:
+            self.icon_preview.clear()
+            return
+            
+        self.current_exe_path = exe_path
+        
+        # Get icon from the executable
+        icon_path = self.icon_extractor.extract_icon(exe_path, self.current_icon_size)
+        
+        if icon_path and os.path.exists(icon_path):
+            # If SVG, use QSvgWidget
+            if icon_path.lower().endswith('.svg'):
+                pixmap = QIcon(icon_path).pixmap(QSize(self.current_icon_size, self.current_icon_size))
+            else:
+                pixmap = QPixmap(icon_path)
+                
+            self.icon_preview.setPixmap(pixmap)
+        else:
+            self.icon_preview.clear()
         
     def update_preview(self, exe_info, shortcut_name, destination):
         """Update the preview with executable and shortcut information."""
@@ -126,6 +222,9 @@ class PreviewWidget(QWidget):
         self.product_info.setText(exe_info.get('product_name', 'Unknown') + 
                                   (f" (v{exe_info.get('version', '')})" if exe_info.get('version') else ""))
         self.company_info.setText(exe_info.get('company', 'Unknown publisher'))
+        
+        # Update icon
+        self.update_icon(exe_info.get('path'))
 
 class ShortcutCreatorUI(QWidget):
     """Main UI for the shortcut creator application."""
@@ -393,3 +492,5 @@ class ShortcutCreatorUI(QWidget):
         self.preview_widget.destination.setText("")
         self.preview_widget.product_info.setText("")
         self.preview_widget.company_info.setText("")
+        self.preview_widget.current_exe_path = None
+        self.preview_widget.icon_preview.clear()

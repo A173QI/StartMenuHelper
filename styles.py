@@ -128,3 +128,24 @@ class StyleSheet:
         border-radius: 8px;
         padding: 16px;
     """
+    
+    # Icon Size Button Styles
+    ICON_SIZE_BUTTON = """
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 12px;
+        background-color: #F3F2F1;
+        color: #323130;
+        border: 1px solid #E1E1E1;
+        border-radius: 4px;
+        padding: 4px 8px;
+    """
+    
+    ICON_SIZE_BUTTON_SELECTED = """
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 12px;
+        background-color: #D0E7F8;
+        color: #0078D4;
+        border: 1px solid #0078D4;
+        border-radius: 4px;
+        padding: 4px 8px;
+    """
